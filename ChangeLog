@@ -46,7 +46,7 @@ Features
    * SHA224_C/SHA384_C are now independent from SHA384_C/SHA512_C respectively.
      This helps in saving code size when some of the above hashes are not
      required.
-   * Add parsing of V3 extensions (key usage, Netscape cert-type,
+   * Add parsing of V3 extensions (key usage,
      Subject Alternative Names) in x509 Certificate Sign Requests.
    * Use HOSTCC (if it is set) when compiling C code during generation of the
      configuration-independent files. This allows them to be generated when
@@ -210,6 +210,7 @@ Changes
      MBEDTLS_SHA512_USE_A64_CRYPTO_*, it is no longer necessary to specify
      compiler target flags on the command line; the library now sets target
      options within the appropriate modules.
+   * All support for the legacy Netscape extensions has been removed.
 
 = Mbed TLS 3.3.0 branch released 2022-12-14
 

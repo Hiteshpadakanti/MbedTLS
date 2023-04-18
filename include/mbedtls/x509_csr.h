@@ -59,7 +59,6 @@ typedef struct mbedtls_x509_csr {
     mbedtls_pk_context pk;          /**< Container for the public key context. */
 
     unsigned int key_usage;     /**< Optional key usage extension value: See the values in x509.h */
-    unsigned char ns_cert_type; /**< Optional Netscape certificate type extension value: See the values in x509.h */
     mbedtls_x509_sequence subject_alt_names; /**< Optional list of raw entries of Subject Alternative Names extension. These can be later parsed by mbedtls_x509_parse_subject_alt_name. */
 
     int MBEDTLS_PRIVATE(ext_types);              /**< Bit string containing detected and parsed extensions */
@@ -241,18 +240,6 @@ int mbedtls_x509write_csr_set_key_usage(mbedtls_x509write_csr *ctx, unsigned cha
  */
 int mbedtls_x509write_csr_set_subject_alternative_name(mbedtls_x509write_csr *ctx,
                                                        const mbedtls_x509_san_list *san_list);
-
-/**
- * \brief           Set the Netscape Cert Type flags
- *                  (e.g. MBEDTLS_X509_NS_CERT_TYPE_SSL_CLIENT | MBEDTLS_X509_NS_CERT_TYPE_EMAIL)
- *
- * \param ctx           CSR context to use
- * \param ns_cert_type  Netscape Cert Type flags to set
- *
- * \return          0 if successful, or MBEDTLS_ERR_X509_ALLOC_FAILED
- */
-int mbedtls_x509write_csr_set_ns_cert_type(mbedtls_x509write_csr *ctx,
-                                           unsigned char ns_cert_type);
 
 /**
  * \brief           Generic function to add to or replace an extension in the

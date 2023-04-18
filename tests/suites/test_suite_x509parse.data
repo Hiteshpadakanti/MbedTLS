@@ -106,10 +106,6 @@ X509 CRT information EC, SHA256 Digest, Wisun Fan device
 depends_on:MBEDTLS_PEM_PARSE_C:MBEDTLS_PK_CAN_ECDSA_SOME:MBEDTLS_ECP_DP_SECP256R1_ENABLED:MBEDTLS_MD_CAN_SHA256
 x509_cert_info:"data_files/parse_input/server5-fan.crt":"cert. version     \: 3\nserial number     \: 4D\nissuer name       \: C=UK, O=Mbed TLS, CN=Mbed TLS FAN\nsubject name      \: C=UK, O=Mbed TLS, CN=Mbed TLS FAN\nissued  on        \: 2019-03-25 09\:03\:46\nexpires on        \: 2029-03-22 09\:03\:46\nsigned using      \: ECDSA with SHA256\nEC key size       \: 256 bits\next key usage     \: Wi-SUN Alliance Field Area Network (FAN)\n"
 
-X509 CRT information, NS Cert Type
-depends_on:MBEDTLS_PEM_PARSE_C:MBEDTLS_RSA_C:MBEDTLS_MD_CAN_SHA1
-x509_cert_info:"data_files/parse_input/server1.cert_type.crt":"cert. version     \: 3\nserial number     \: 01\nissuer name       \: C=NL, O=PolarSSL, CN=PolarSSL Test CA\nsubject name      \: C=NL, O=PolarSSL, CN=PolarSSL Server 1\nissued  on        \: 2019-02-10 14\:44\:06\nexpires on        \: 2029-02-10 14\:44\:06\nsigned using      \: RSA with SHA1\nRSA key size      \: 2048 bits\nbasic constraints \: CA=false\ncert. type        \: SSL Server\n"
-
 X509 CRT information, Key Usage
 depends_on:MBEDTLS_PEM_PARSE_C:MBEDTLS_RSA_C:MBEDTLS_MD_CAN_SHA1
 x509_cert_info:"data_files/parse_input/server1.key_usage.crt":"cert. version     \: 3\nserial number     \: 01\nissuer name       \: C=NL, O=PolarSSL, CN=PolarSSL Test CA\nsubject name      \: C=NL, O=PolarSSL, CN=PolarSSL Server 1\nissued  on        \: 2019-02-10 14\:44\:06\nexpires on        \: 2029-02-10 14\:44\:06\nsigned using      \: RSA with SHA1\nRSA key size      \: 2048 bits\nbasic constraints \: CA=false\nkey usage         \: Digital Signature, Non Repudiation, Key Encipherment\n"
@@ -384,11 +380,7 @@ mbedtls_x509_csr_info:"data_files/parse_input/server1-ms.req.sha256":"CSR versio
 
 X509 CSR Information v3 extensions #1 (all)
 depends_on:MBEDTLS_MD_CAN_SHA256:MBEDTLS_RSA_C:!MBEDTLS_X509_REMOVE_INFO
-mbedtls_x509_csr_info:"data_files/parse_input/test_csr_v3_all.csr.der":"CSR version   \: 1\nsubject name  \: CN=etcd\nsigned using  \: RSA with SHA-256\nRSA key size  \: 1024 bits\n\nsubject alt name  \:\n    otherName \:\n        hardware module name \:\n            hardware type          \: 1.3.6.1.4.1.17.3\n            hardware serial number \: 3132338081008180333231\ncert. type        \: SSL Client\nkey usage         \: CRL Sign\n"
-
-X509 CSR Information v3 extensions #2 (nsCertType only)
-depends_on:MBEDTLS_MD_CAN_SHA256:MBEDTLS_RSA_C:!MBEDTLS_X509_REMOVE_INFO
-mbedtls_x509_csr_info:"data_files/parse_input/test_csr_v3_nsCertType.csr.der":"CSR version   \: 1\nsubject name  \: CN=etcd\nsigned using  \: RSA with SHA-256\nRSA key size  \: 1024 bits\n\ncert. type        \: SSL Server\n"
+mbedtls_x509_csr_info:"data_files/parse_input/test_csr_v3_all.csr.der":"CSR version   \: 1\nsubject name  \: CN=etcd\nsigned using  \: RSA with SHA-256\nRSA key size  \: 1024 bits\n\nsubject alt name  \:\n    otherName \:\n        hardware module name \:\n            hardware type          \: 1.3.6.1.4.1.17.3\n            hardware serial number \: 3132338081008180333231\nkey usage         \: CRL Sign\n"
 
 X509 CSR Information v3 extensions #3 (subjectAltName only)
 depends_on:MBEDTLS_MD_CAN_SHA256:MBEDTLS_RSA_C:!MBEDTLS_X509_REMOVE_INFO
@@ -3061,17 +3053,13 @@ X509 CSR ASN.1 (extensions: invalid extension subject alt name sequence tag)
 depends_on:MBEDTLS_MD_CAN_SHA256:MBEDTLS_RSA_C
 mbedtls_x509_csr_parse_file:"data_files/parse_input/test_csr_v3_all_malformed_extension_subject_alt_name_sequence_tag.csr.der":"":MBEDTLS_ERR_X509_INVALID_EXTENSIONS+MBEDTLS_ERR_ASN1_UNEXPECTED_TAG
 
-X509 CSR ASN.1 (extensions: invalid extension ns cert bitstream tag)
-depends_on:MBEDTLS_MD_CAN_SHA256:MBEDTLS_RSA_C
-mbedtls_x509_csr_parse_file:"data_files/parse_input/test_csr_v3_all_malformed_extension_ns_cert_bitstream_tag.csr.der":"":MBEDTLS_ERR_X509_INVALID_EXTENSIONS+MBEDTLS_ERR_ASN1_UNEXPECTED_TAG
-
 X509 CSR ASN.1 (extensions: duplicated extension)
 depends_on:MBEDTLS_MD_CAN_SHA256:MBEDTLS_RSA_C
 mbedtls_x509_csr_parse_file:"data_files/parse_input/test_csr_v3_all_malformed_duplicated_extension.csr.der":"":MBEDTLS_ERR_X509_INVALID_EXTENSIONS+MBEDTLS_ERR_ASN1_INVALID_DATA
 
 X509 CSR ASN.1 (extensions: invalid extension type data)
 depends_on:MBEDTLS_MD_CAN_SHA256:MBEDTLS_RSA_C
-mbedtls_x509_csr_parse_file:"data_files/parse_input/test_csr_v3_all_malformed_extension_type_oid.csr.der":"CSR version   \: 1\nsubject name  \: CN=etcd\nsigned using  \: RSA with SHA-256\nRSA key size  \: 1024 bits\n\ncert. type        \: SSL Client\nkey usage         \: CRL Sign\n":0
+mbedtls_x509_csr_parse_file:"data_files/parse_input/test_csr_v3_all_malformed_extension_type_oid.csr.der":"CSR version   \: 1\nsubject name  \: CN=etcd\nsigned using  \: RSA with SHA-256\nRSA key size  \: 1024 bits\n\nkey usage         \: CRL Sign\n":0
 
 X509 File parse (no issues)
 depends_on:MBEDTLS_PK_CAN_ECDSA_SOME:MBEDTLS_ECP_DP_SECP256R1_ENABLED:MBEDTLS_MD_CAN_SHA256:MBEDTLS_RSA_C

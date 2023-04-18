@@ -208,30 +208,6 @@ int mbedtls_x509write_csr_set_key_usage(mbedtls_x509write_csr *ctx, unsigned cha
     return 0;
 }
 
-int mbedtls_x509write_csr_set_ns_cert_type(mbedtls_x509write_csr *ctx,
-                                           unsigned char ns_cert_type)
-{
-    unsigned char buf[4] = { 0 };
-    unsigned char *c;
-    int ret = MBEDTLS_ERR_ERROR_CORRUPTION_DETECTED;
-
-    c = buf + 4;
-
-    ret = mbedtls_asn1_write_named_bitstring(&c, buf, &ns_cert_type, 8);
-    if (ret < 3 || ret > 4) {
-        return ret;
-    }
-
-    ret = mbedtls_x509write_csr_set_extension(ctx, MBEDTLS_OID_NS_CERT_TYPE,
-                                              MBEDTLS_OID_SIZE(MBEDTLS_OID_NS_CERT_TYPE),
-                                              0, c, (size_t) ret);
-    if (ret != 0) {
-        return ret;
-    }
-
-    return 0;
-}
-
 static int x509write_csr_der_internal(mbedtls_x509write_csr *ctx,
                                       unsigned char *buf,
                                       size_t size,
