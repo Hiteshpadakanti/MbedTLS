@@ -89,8 +89,6 @@ typedef struct mbedtls_x509_crt {
 
     mbedtls_x509_sequence ext_key_usage; /**< Optional list of extended key usage OIDs. */
 
-    unsigned char MBEDTLS_PRIVATE(ns_cert_type); /**< Optional Netscape certificate type extension value: See the values in x509.h */
-
     mbedtls_x509_buf MBEDTLS_PRIVATE(sig);               /**< Signature: hash of the tbs part signed with the private key. */
     mbedtls_md_type_t MBEDTLS_PRIVATE(sig_md);           /**< Internal representation of the MD algorithm of the signature algorithm, e.g. MBEDTLS_MD_SHA256 */
     mbedtls_pk_type_t MBEDTLS_PRIVATE(sig_pk);           /**< Internal representation of the Public Key algorithm of the signature algorithm, e.g. MBEDTLS_PK_RSA */
@@ -201,9 +199,6 @@ mbedtls_x509_crt_profile;
     X509_CRT_ERROR_INFO(MBEDTLS_X509_BADCERT_EXT_KEY_USAGE,                       \
                         "MBEDTLS_X509_BADCERT_EXT_KEY_USAGE",                     \
                         "Usage does not match the extendedKeyUsage extension")   \
-    X509_CRT_ERROR_INFO(MBEDTLS_X509_BADCERT_NS_CERT_TYPE,                        \
-                        "MBEDTLS_X509_BADCERT_NS_CERT_TYPE",                      \
-                        "Usage does not match the nsCertType extension")         \
     X509_CRT_ERROR_INFO(MBEDTLS_X509_BADCERT_BAD_MD,                              \
                         "MBEDTLS_X509_BADCERT_BAD_MD",                            \
                         "The certificate is signed with an unacceptable hash.")  \
@@ -1138,18 +1133,6 @@ int mbedtls_x509write_crt_set_key_usage(mbedtls_x509write_cert *ctx,
  */
 int mbedtls_x509write_crt_set_ext_key_usage(mbedtls_x509write_cert *ctx,
                                             const mbedtls_asn1_sequence *exts);
-
-/**
- * \brief           Set the Netscape Cert Type flags
- *                  (e.g. MBEDTLS_X509_NS_CERT_TYPE_SSL_CLIENT | MBEDTLS_X509_NS_CERT_TYPE_EMAIL)
- *
- * \param ctx           CRT context to use
- * \param ns_cert_type  Netscape Cert Type flags to set
- *
- * \return          0 if successful, or MBEDTLS_ERR_X509_ALLOC_FAILED
- */
-int mbedtls_x509write_crt_set_ns_cert_type(mbedtls_x509write_cert *ctx,
-                                           unsigned char ns_cert_type);
 
 /**
  * \brief           Free the contents of a CRT write context

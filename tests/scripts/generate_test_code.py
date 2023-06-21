@@ -1033,8 +1033,8 @@ def gen_from_test_data(data_f, out_data_f, func_info, suite_dependencies):
         # Write parameters
         if len(test_args) != len(func_args):
             raise GeneratorInputError("%d: Invalid number of arguments in test "
-                                      "%s. See function %s signature." %
-                                      (line_no, test_name, function_name))
+                                      "%s (expected %d, got %d). See function %s signature." %
+                                      (line_no, test_name, len(func_args), len(test_args), function_name))
         expression_code += write_parameters(out_data_f, test_args, func_args,
                                             unique_expressions)
 

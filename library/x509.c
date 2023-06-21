@@ -1331,34 +1331,6 @@ int mbedtls_x509_get_subject_alt_name(unsigned char **p,
     return mbedtls_x509_get_subject_alt_name_ext(p, end, subject_alt_name);
 }
 
-int mbedtls_x509_get_ns_cert_type(unsigned char **p,
-                                  const unsigned char *end,
-                                  unsigned char *ns_cert_type)
-{
-    int ret = MBEDTLS_ERR_ERROR_CORRUPTION_DETECTED;
-    mbedtls_x509_bitstring bs = { 0, 0, NULL };
-
-    if ((ret = mbedtls_asn1_get_bitstring(p, end, &bs)) != 0) {
-        return MBEDTLS_ERROR_ADD(MBEDTLS_ERR_X509_INVALID_EXTENSIONS, ret);
-    }
-
-    /* A bitstring with no flags set is still technically valid, as it will mean
-       that the certificate has no designated purpose at the time of creation. */
-    if (bs.len == 0) {
-        *ns_cert_type = 0;
-        return 0;
-    }
-
-    if (bs.len != 1) {
-        return MBEDTLS_ERROR_ADD(MBEDTLS_ERR_X509_INVALID_EXTENSIONS,
-                                 MBEDTLS_ERR_ASN1_INVALID_LENGTH);
-    }
-
-    /* Get actual bitstring */
-    *ns_cert_type = *bs.p;
-    return 0;
-}
-
 int mbedtls_x509_get_key_usage(unsigned char **p,
                                const unsigned char *end,
                                unsigned int *key_usage)
@@ -1700,43 +1672,18 @@ int mbedtls_x509_info_subject_alt_name(char **buf, size_t *size,
     return 0;
 }
 
-#define PRINT_ITEM(i)                           \
-    {                                           \
-        ret = mbedtls_snprintf(p, n, "%s" i, sep);    \
-        MBEDTLS_X509_SAFE_SNPRINTF;                        \
-        sep = ", ";                             \
-    }
-
-#define CERT_TYPE(type, name)                    \
-    if (ns_cert_type & (type))                 \
-    PRINT_ITEM(name);
-
-int mbedtls_x509_info_cert_type(char **buf, size_t *size,
-                                unsigned char ns_cert_type)
-{
-    int ret = MBEDTLS_ERR_ERROR_CORRUPTION_DETECTED;
-    size_t n = *size;
-    char *p = *buf;
-    const char *sep = "";
-
-    CERT_TYPE(MBEDTLS_X509_NS_CERT_TYPE_SSL_CLIENT,         "SSL Client");
-    CERT_TYPE(MBEDTLS_X509_NS_CERT_TYPE_SSL_SERVER,         "SSL Server");
-    CERT_TYPE(MBEDTLS_X509_NS_CERT_TYPE_EMAIL,              "Email");
-    CERT_TYPE(MBEDTLS_X509_NS_CERT_TYPE_OBJECT_SIGNING,     "Object Signing");
-    CERT_TYPE(MBEDTLS_X509_NS_CERT_TYPE_RESERVED,           "Reserved");
-    CERT_TYPE(MBEDTLS_X509_NS_CERT_TYPE_SSL_CA,             "SSL CA");
-    CERT_TYPE(MBEDTLS_X509_NS_CERT_TYPE_EMAIL_CA,           "Email CA");
-    CERT_TYPE(MBEDTLS_X509_NS_CERT_TYPE_OBJECT_SIGNING_CA,  "Object Signing CA");
-
-    *size = n;
-    *buf = p;
-
-    return 0;
-}
+#define PRINT_ITEM(i)                              \
+    do {                                           \
+        ret = mbedtls_snprintf(p, n, "%s" i, sep); \
+        MBEDTLS_X509_SAFE_SNPRINTF;                \
+        sep = ", ";                                \
+    } while (0)
 
 #define KEY_USAGE(code, name)    \
-    if (key_usage & (code))    \
-    PRINT_ITEM(name);
+    do {                         \
+        if (key_usage & (code))  \
+            PRINT_ITEM(name);    \
+    } while (0)
 
 int mbedtls_x509_info_key_usage(char **buf, size_t *size,
                                 unsigned int key_usage)

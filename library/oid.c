@@ -307,12 +307,6 @@ static const oid_x509_ext_t oid_x509_ext[] =
         MBEDTLS_OID_X509_EXT_SUBJECT_ALT_NAME,
     },
     {
-        OID_DESCRIPTOR(MBEDTLS_OID_NS_CERT_TYPE,
-                       "id-netscape-certtype",
-                       "Netscape Certificate Type"),
-        MBEDTLS_OID_X509_EXT_NS_CERT_TYPE,
-    },
-    {
         OID_DESCRIPTOR(MBEDTLS_OID_CERTIFICATE_POLICIES,
                        "id-ce-certificatePolicies",
                        "Certificate Policies"),

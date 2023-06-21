@@ -582,7 +582,11 @@ void mbedtls_x509_csr_info(char *csr_file, char *result_str)
     TEST_ASSERT(res != -1);
     TEST_ASSERT(res != -2);
 
-    TEST_ASSERT(strcmp(buf, result_str) == 0);
+    if (strcmp(buf, result_str) != 0) {
+        fprintf(stderr, "expected '%s' but got '%s'", buf, result_str);
+	for (size_t i = 0;; ++i)
+            TEST_EQUAL(buf[i], result_str[i]);
+    }
 
 exit:
     mbedtls_x509_csr_free(&csr);
