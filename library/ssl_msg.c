@@ -1607,6 +1607,22 @@ hmac_failed_etm_enabled:
         defined(MBEDTLS_SSL_PROTO_TLS1_2)
         if (transform->minor_ver > MBEDTLS_SSL_MINOR_VERSION_0) {
             /*
+             * Delicate code warning: Lucky Thirteen countermeasure.
+             *
+             * In CBC+HMAC cipher suites, the MAC is near the end of the
+             * ciphertext, followed with 1 to 256 bytes. To avoid a
+             * padding oracle attack known as Lucky Thirteen, we must
+             * not reveal the length of the padding, and therefore the
+             * position of the MAC, until the MAC has been verified.
+             * This includes the timing of memory accesses, which can leak to
+             * a local attacker. Hence we use the function mbedtls_ct_hmac()
+             * which is specially crafted to calculate the HMAC at
+             * of a prefix of the message within a range without revealing
+             * the exact length of the prefix through memory access patterns.
+             *
+             * (This does not apply when using encrypt-then-MAC, which
+             * is handled by the block of code above.)
+             *
              * The next two sizes are the minimum and maximum values of
              * data_len over all padlen values.
              *
@@ -1617,7 +1633,28 @@ hmac_failed_etm_enabled:
              * length, as we previously did in_msglen -= maclen too.
              */
             const size_t max_len = rec->data_len + padlen;
-            const size_t min_len = (max_len > 256) ? max_len - 256 : 0;
+            size_t min_len;
+            switch (mode) {
+#if defined(MBEDTLS_SSL_SOME_SUITES_USE_CBC)
+                case MBEDTLS_MODE_CBC:
+                    /* CBC in TLS can have up to 256 bytes of padding. */
+                    min_len = (max_len > 256) ? max_len - 256 : 0;
+                    break;
+#endif /* MBEDTLS_SSL_SOME_SUITES_USE_CBC */
+#if defined(MBEDTLS_ARC4_C) || defined(MBEDTLS_CIPHER_NULL_CIPHER)
+                case MBEDTLS_MODE_STREAM:
+                    /* With a stream cipher + HMAC, there is no padding.
+                     * We reuse the mbedtls_ct_hmac() code path here to avoid
+                     * making this  function even more complex. In terms of
+                     * performance, with min_len==max_len, the overhead is
+                     * negligible over mbedtls_md_hmac(). */
+                    min_len = max_len;
+                    break;
+#endif /* defined(MBEDTLS_ARC4_C) || defined(MBEDTLS_CIPHER_NULL_CIPHER) */
+                default:
+                    MBEDTLS_SSL_DEBUG_MSG(1, ("should never happen"));
+                    return MBEDTLS_ERR_SSL_INTERNAL_ERROR;
+            }
 
             ret = mbedtls_ct_hmac(&transform->md_ctx_dec,
                                   add_data, add_data_len,
