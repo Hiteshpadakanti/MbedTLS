@@ -1217,6 +1217,17 @@ component_test_full_cmake_gcc_asan_new_bignum () {
     tests/context-info.sh
 }
 
+component_test_psa_crypto_builtin_keys() {
+    msg "build: full config + PSA_CRYPTO_BUILTIN_KEYS, cmake, gcc, release"
+    scripts/config.py full
+    scripts/config.py set MBEDTLS_PSA_CRYPTO_BUILTIN_KEYS
+    CC=gcc cmake -D CMAKE_BUILD_TYPE:String=Release -D ENABLE_PROGRAMS=Off .
+    make
+
+    msg "test: full config - PSA_CRYPTO_BUILTIN_KEYS, cmake, gcc, release"
+    make test
+}
+
 component_test_psa_crypto_key_id_encodes_owner () {
     msg "build: full config + PSA_CRYPTO_KEY_ID_ENCODES_OWNER, cmake, gcc, ASan"
     scripts/config.py full
@@ -6125,7 +6136,7 @@ support_test_psa_compliance () {
 
 component_check_code_style () {
     msg "Check C code style"
-    ./scripts/code_style.py
+    ./tests/framework/scripts/code_style.py
 }
 
 support_check_code_style() {
@@ -6145,7 +6156,7 @@ component_check_test_helpers () {
     # unittest writes out mundane stuff like number or tests run on stderr.
     # Our convention is to reserve stderr for actual errors, and write
     # harmless info on stdout so it can be suppress with --quiet.
-    ./tests/scripts/test_generate_test_code.py 2>&1
+    ./tests/framework/scripts/test_generate_test_code.py 2>&1
 
     msg "unit test: translate_ciphers.py"
     python3 -m unittest tests/scripts/translate_ciphers.py 2>&1

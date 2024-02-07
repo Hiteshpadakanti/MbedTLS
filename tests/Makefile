@@ -50,35 +50,35 @@ generated_files: $(GENERATED_FILES)
 .SECONDARY: generated_bignum_test_data generated_ecp_test_data generated_psa_test_data
 $(GENERATED_BIGNUM_DATA_FILES): $(gen_file_dep) generated_bignum_test_data
 generated_bignum_test_data: scripts/generate_bignum_tests.py
-generated_bignum_test_data: ../scripts/mbedtls_dev/bignum_common.py
-generated_bignum_test_data: ../scripts/mbedtls_dev/bignum_core.py
-generated_bignum_test_data: ../scripts/mbedtls_dev/bignum_mod_raw.py
-generated_bignum_test_data: ../scripts/mbedtls_dev/bignum_mod.py
-generated_bignum_test_data: ../scripts/mbedtls_dev/test_case.py
-generated_bignum_test_data: ../scripts/mbedtls_dev/test_data_generation.py
+generated_bignum_test_data: framework/scripts/test_frm_dev/bignum_common.py
+generated_bignum_test_data: framework/scripts/test_frm_dev/bignum_core.py
+generated_bignum_test_data: framework/scripts/test_frm_dev/bignum_mod_raw.py
+generated_bignum_test_data: framework/scripts/test_frm_dev/bignum_mod.py
+generated_bignum_test_data: framework/scripts/test_frm_dev/test_case.py
+generated_bignum_test_data: framework/scripts/test_frm_dev/test_data_generation.py
 generated_bignum_test_data:
 	echo "  Gen   $(GENERATED_BIGNUM_DATA_FILES)"
 	$(PYTHON) scripts/generate_bignum_tests.py
 
 $(GENERATED_ECP_DATA_FILES): $(gen_file_dep) generated_ecp_test_data
 generated_ecp_test_data: scripts/generate_ecp_tests.py
-generated_ecp_test_data: ../scripts/mbedtls_dev/bignum_common.py
-generated_ecp_test_data: ../scripts/mbedtls_dev/ecp.py
-generated_ecp_test_data: ../scripts/mbedtls_dev/test_case.py
-generated_ecp_test_data: ../scripts/mbedtls_dev/test_data_generation.py
+generated_ecp_test_data: framework/scripts/test_frm_dev/bignum_common.py
+generated_ecp_test_data: framework/scripts/test_frm_dev/ecp.py
+generated_ecp_test_data: framework/scripts/test_frm_dev/test_case.py
+generated_ecp_test_data: framework/scripts/test_frm_dev/test_data_generation.py
 generated_ecp_test_data:
 	echo "  Gen   $(GENERATED_ECP_DATA_FILES)"
 	$(PYTHON) scripts/generate_ecp_tests.py
 
 $(GENERATED_PSA_DATA_FILES): $(gen_file_dep) generated_psa_test_data
 generated_psa_test_data: scripts/generate_psa_tests.py
-generated_psa_test_data: ../scripts/mbedtls_dev/crypto_data_tests.py
-generated_psa_test_data: ../scripts/mbedtls_dev/crypto_knowledge.py
+generated_psa_test_data: framework/scripts/test_frm_dev/crypto_data_tests.py
+generated_psa_test_data: framework/scripts/test_frm_dev/crypto_knowledge.py
 generated_psa_test_data: ../scripts/mbedtls_dev/macro_collector.py
-generated_psa_test_data: ../scripts/mbedtls_dev/psa_information.py
-generated_psa_test_data: ../scripts/mbedtls_dev/psa_storage.py
-generated_psa_test_data: ../scripts/mbedtls_dev/test_case.py
-generated_psa_test_data: ../scripts/mbedtls_dev/test_data_generation.py
+generated_psa_test_data: framework/scripts/test_frm_dev/psa_information.py
+generated_psa_test_data: framework/scripts/test_frm_dev/psa_storage.py
+generated_psa_test_data: framework/scripts/test_frm_dev/test_case.py
+generated_psa_test_data: framework/scripts/test_frm_dev/test_data_generation.py
 ## The generated file only depends on the options that are present in
 ## crypto_config.h, not on which options are set. To avoid regenerating this
 ## file all the time when switching between configurations, don't declare
@@ -112,7 +112,7 @@ all: $(BINARIES)
 
 mbedtls_test: $(MBEDTLS_TEST_OBJS)
 
-TEST_OBJS_DEPS = $(wildcard include/test/*.h include/test/*/*.h)
+TEST_OBJS_DEPS = $(wildcard include/test/*.h include/test/*/*.h framework/include/test/*.h)
 ifdef RECORD_PSA_STATUS_COVERAGE_LOG
 # Explicitly depend on this header because on a clean copy of the source tree,
 # it doesn't exist yet and must be generated as part of the build, and
@@ -130,6 +130,10 @@ src/drivers/%.o : src/drivers/%.c
 	$(CC) $(LOCAL_CFLAGS) $(CFLAGS) -o $@ -c $<
 
 src/test_helpers/%.o : src/test_helpers/%.c
+	echo "  CC    $<"
+	$(CC) $(LOCAL_CFLAGS) $(CFLAGS) -o $@ -c $<
+
+framework/src/%.o : framework/src/%.c $(TEST_OBJS_DEPS)
 	echo "  CC    $<"
 	$(CC) $(LOCAL_CFLAGS) $(CFLAGS) -o $@ -c $<
 
@@ -151,9 +155,9 @@ c: $(C_FILES)
 # dot in .c file's base name.
 #
 .SECONDEXPANSION:
-%.c: suites/$$(firstword $$(subst ., ,$$*)).function suites/%.data scripts/generate_test_code.py suites/helpers.function suites/main_test.function suites/host_test.function
+%.c: suites/$$(firstword $$(subst ., ,$$*)).function suites/%.data framework/scripts/generate_test_code.py suites/helpers.function suites/main_test.function suites/host_test.function
 	echo "  Gen   $@"
-	$(PYTHON) scripts/generate_test_code.py -f suites/$(firstword $(subst ., ,$*)).function \
+	$(PYTHON) framework/scripts/generate_test_code.py -f suites/$(firstword $(subst ., ,$*)).function \
 		-d suites/$*.data \
 		-t suites/main_test.function \
 		-p suites/host_test.function \
@@ -170,6 +174,7 @@ clean:
 ifndef WINDOWS
 	rm -rf $(BINARIES) *.c *.datax
 	rm -f src/*.o src/drivers/*.o src/test_helpers/*.o src/libmbed*
+	rm -f framework/src/*.o
 	rm -f include/test/instrument_record_status.h
 	rm -f include/alt-extra/*/*_alt.h
 	rm -rf libtestdriver1
@@ -182,6 +187,7 @@ else
 	if exist src/drivers/*.o del /Q /F src/drivers/*.o
 	if exist src/test_helpers/*.o del /Q /F src/test_helpers/*.o
 	if exist src/libmbed* del /Q /F src/libmed*
+	if exist framework/src/*.o del /Q /F framework/src/*.o
 	if exist include/test/instrument_record_status.h del /Q /F include/test/instrument_record_status.h
 endif
 

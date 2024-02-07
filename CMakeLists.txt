@@ -76,7 +76,12 @@ string(REGEX MATCH "MSVC" CMAKE_COMPILER_IS_MSVC "${CMAKE_C_COMPILER_ID}")
 if(CMAKE_COMPILER_IS_MSVC)
     option(ENABLE_TESTING "Build Mbed TLS tests." OFF)
 else()
-    option(ENABLE_TESTING "Build Mbed TLS tests." ON)
+    if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/tests/framework/scripts/project_name.txt)
+        option(ENABLE_TESTING "Build Mbed TLS tests." OFF)
+        message(WARNING "Test framework not present, tests cannot be built.")
+    else()
+        option(ENABLE_TESTING "Build Mbed TLS tests." ON)
+    endif()
 endif()
 
 # Warning string - created as a list for compatibility with CMake 2.8
@@ -292,13 +297,15 @@ add_subdirectory(library)
 # target. This library of objects is used by tests and programs CMake files
 # to define the test executables.
 #
-if(ENABLE_TESTING OR ENABLE_PROGRAMS)
+if(ENABLE_TESTING)
     file(GLOB MBEDTLS_TEST_FILES
          ${CMAKE_CURRENT_SOURCE_DIR}/tests/src/*.c
+         ${CMAKE_CURRENT_SOURCE_DIR}/tests/framework/src/*.c
          ${CMAKE_CURRENT_SOURCE_DIR}/tests/src/drivers/*.c)
     add_library(mbedtls_test OBJECT ${MBEDTLS_TEST_FILES})
     target_include_directories(mbedtls_test
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/tests/include
+        PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/tests/framework/include
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/library)
 
@@ -307,6 +314,7 @@ if(ENABLE_TESTING OR ENABLE_PROGRAMS)
     add_library(mbedtls_test_helpers OBJECT ${MBEDTLS_TEST_HELPER_FILES})
     target_include_directories(mbedtls_test_helpers
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/tests/include
+        PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/tests/framework/include
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/library
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/everest/include)
