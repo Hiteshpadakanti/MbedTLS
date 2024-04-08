@@ -8,13 +8,13 @@ generating the required key at run time. This helps speeding up testing."""
 
 import os
 import sys
+import argparse
 # pylint: disable=wrong-import-position
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__)) + "/"
 sys.path.append(SCRIPT_DIR + "../../scripts/")
 from mbedtls_dev.asymmetric_key_data import ASYMMETRIC_KEY_DATA
 import scripts_path # pylint: disable=unused-import
 
-OUTPUT_HEADER_FILE = SCRIPT_DIR + "../src/test_keys.h"
 BYTES_PER_LINE = 12
 
 KEYS = {
@@ -69,11 +69,17 @@ def convert_der_to_c(array_name: str, key_data: bytearray) -> str:
     return output_text
 
 def main():
-    # Remove output file if already existing.
-    if os.path.exists(OUTPUT_HEADER_FILE):
-        os.remove(OUTPUT_HEADER_FILE)
+    argparser = argparse.ArgumentParser()
+    argparser.add_argument("--output", required=True, help="Output file")
+    args = argparser.parse_args()
 
-    output_file = open(OUTPUT_HEADER_FILE, 'at')
+    output_file = args.output
+    # Remove output file if already existing.
+    if os.path.exists(output_file):
+        print("Warning: {} already existing, it will be overwritten.", output_file)
+        os.remove(output_file)
+
+    output_file = open(output_file, 'at')
     output_file.write(
         "/*********************************************************************************\n" +
         " * This file was automatically generated from tests/scripts/generate_test_keys.py.\n" +
