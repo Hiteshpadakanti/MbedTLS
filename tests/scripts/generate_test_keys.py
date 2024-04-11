@@ -69,14 +69,16 @@ def convert_der_to_c(array_name: str, key_data: bytearray) -> str:
     return output_text
 
 def main():
+    current_path = os.path.dirname(os.path.realpath(__file__))
+    default_output_path = current_path + "/../src/test_keys.h"
+
     argparser = argparse.ArgumentParser()
-    argparser.add_argument("--output", required=True, help="Output file")
+    argparser.add_argument("--output", help="Output file", default=default_output_path)
     args = argparser.parse_args()
 
     output_file = args.output
     # Remove output file if already existing.
     if os.path.exists(output_file):
-        print("Warning: {} already existing, it will be overwritten.", output_file)
         os.remove(output_file)
 
     output_file = open(output_file, 'at')
