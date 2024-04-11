@@ -77,9 +77,9 @@ def main():
     args = argparser.parse_args()
 
     output_file = args.output
-    # Remove output file if already existing.
+    # If the output file already exists, then we can quit (successfully)
     if os.path.exists(output_file):
-        os.remove(output_file)
+        return
 
     output_file = open(output_file, 'at')
     output_file.write(
