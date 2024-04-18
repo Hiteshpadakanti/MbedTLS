@@ -34,7 +34,7 @@
 # Each component is executed in a separate shell process. The component
 # fails if any command in it returns a non-zero status.
 #
-# The framework in all.shperforms some cleanup tasks after each component.
+# The framework in all.sh performs some cleanup tasks after each component.
 # This means that components can assume that the working directory is in a
 # cleaned-up state, and don't need to perform the cleanup themselves.
 # * Run `make clean`.
