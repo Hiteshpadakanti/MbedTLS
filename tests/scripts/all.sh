@@ -73,6 +73,15 @@
 #  * post_XXX: things to do after running the tests.
 #  * other: miscellaneous support functions.
 #
+# The all.sh script has been split up into two main sections.
+# all.sh contains the framework that is required for executing the
+# components, and component.sh contains the components themselves.
+#
+# In this context, a component is a callable bash function that
+# contains a series of commands. These commands are executed in
+# order to run a particular set of tests. Components are independent
+# and therefore can be run in any order or parallelized.
+#
 # The test components are imported into this script from
 # the accompanying components.sh script.
 
