@@ -990,6 +990,7 @@ source "$test_script_dir/components-compiler.sh"
 source "$test_script_dir/components-platform.sh"
 source "$test_script_dir/components-build-system.sh"
 source "$test_script_dir/components-configuration.sh"
+source "$test_script_dir/components-basic-checks.sh"
 
 ################################################################
 #### Termination
