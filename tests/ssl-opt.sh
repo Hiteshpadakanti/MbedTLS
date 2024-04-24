@@ -2110,7 +2110,7 @@ run_test    "TLS: password protected server key, two certificates" \
 requires_config_enabled MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK
 run_test    "CA callback on client" \
             "$P_SRV debug_level=3" \
-            "$P_CLI force_version=tls12 ca_callback=1 debug_level=3 " \
+            "$P_CLI ca_callback=1 debug_level=3 " \
             0 \
             -c "use CA callback for X.509 CRT verification" \
             -S "error" \
@@ -2120,7 +2120,7 @@ requires_config_enabled MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK
 requires_config_enabled MBEDTLS_X509_CRT_PARSE_C
 requires_hash_alg SHA_256
 run_test    "CA callback on server" \
-            "$P_SRV force_version=tls12 auth_mode=required" \
+            "$P_SRV auth_mode=required" \
             "$P_CLI ca_callback=1 debug_level=3 crt_file=data_files/server5.crt \
              key_file=data_files/server5.key" \
             0 \
@@ -6160,7 +6160,7 @@ requires_config_enabled MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK
 run_test    "Authentication, CA callback: server badcert, client required" \
             "$P_SRV crt_file=data_files/server5-badsign.crt \
              key_file=data_files/server5.key" \
-            "$P_CLI force_version=tls12 ca_callback=1 debug_level=3 auth_mode=required" \
+            "$P_CLI ca_callback=1 debug_level=3 auth_mode=required" \
             1 \
             -c "use CA callback for X.509 CRT verification" \
             -c "x509_verify_cert() returned" \
@@ -6211,7 +6211,7 @@ run_test    "Authentication, CA callback: server ECDH p256v1, client optional, p
 
 requires_config_enabled MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK
 requires_any_configs_enabled $TLS1_2_KEY_EXCHANGES_WITH_CERT
-run_test    "Authentication, CA callback: client SHA256, server required" \
+run_test    "Authentication, CA callback: client SHA384, server required" \
             "$P_SRV ca_callback=1 debug_level=3 auth_mode=required" \
             "$P_CLI debug_level=3 crt_file=data_files/server6.crt \
              key_file=data_files/server6.key \
@@ -6223,7 +6223,7 @@ run_test    "Authentication, CA callback: client SHA256, server required" \
 
 requires_config_enabled MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK
 requires_any_configs_enabled $TLS1_2_KEY_EXCHANGES_WITH_CERT
-run_test    "Authentication, CA callback: client SHA384, server required" \
+run_test    "Authentication, CA callback: client SHA256, server required" \
             "$P_SRV ca_callback=1 debug_level=3 auth_mode=required" \
             "$P_CLI debug_level=3 crt_file=data_files/server6.crt \
              key_file=data_files/server6.key \
@@ -6235,7 +6235,7 @@ run_test    "Authentication, CA callback: client SHA384, server required" \
 
 requires_config_enabled MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK
 run_test    "Authentication, CA callback: client badcert, server required" \
-            "$P_SRV force_version=tls12 ca_callback=1 debug_level=3 auth_mode=required" \
+            "$P_SRV ca_callback=1 debug_level=3 auth_mode=required" \
             "$P_CLI debug_level=3 crt_file=data_files/server5-badsign.crt \
              key_file=data_files/server5.key" \
             1 \
@@ -6250,7 +6250,6 @@ run_test    "Authentication, CA callback: client badcert, server required" \
             -s "! The certificate is not correctly signed by the trusted CA" \
             -s "! mbedtls_ssl_handshake returned" \
             -s "send alert level=2 message=48" \
-            -c "! mbedtls_ssl_handshake returned" \
             -s "X509 - Certificate verification failed"
 # We don't check that the client receives the alert because it might
 # detect that its write end of the connection is closed and abort
@@ -6258,7 +6257,7 @@ run_test    "Authentication, CA callback: client badcert, server required" \
 
 requires_config_enabled MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK
 run_test    "Authentication, CA callback: client cert not trusted, server required" \
-            "$P_SRV force_version=tls12 ca_callback=1 debug_level=3 auth_mode=required" \
+            "$P_SRV ca_callback=1 debug_level=3 auth_mode=required" \
             "$P_CLI debug_level=3 crt_file=data_files/server5-selfsigned.crt \
              key_file=data_files/server5.key" \
             1 \
@@ -6272,12 +6271,11 @@ run_test    "Authentication, CA callback: client cert not trusted, server requir
             -s "x509_verify_cert() returned" \
             -s "! The certificate is not correctly signed by the trusted CA" \
             -s "! mbedtls_ssl_handshake returned" \
-            -c "! mbedtls_ssl_handshake returned" \
             -s "X509 - Certificate verification failed"
 
 requires_config_enabled MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK
 run_test    "Authentication, CA callback: client badcert, server optional" \
-            "$P_SRV force_version=tls12 ca_callback=1 debug_level=3 auth_mode=optional" \
+            "$P_SRV ca_callback=1 debug_level=3 auth_mode=optional" \
             "$P_CLI debug_level=3 crt_file=data_files/server5-badsign.crt \
              key_file=data_files/server5.key" \
             0 \
@@ -6300,7 +6298,7 @@ requires_config_enabled MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK
 run_test    "Authentication, CA callback: server max_int chain, client default" \
             "$P_SRV crt_file=data_files/dir-maxpath/c09.pem \
                     key_file=data_files/dir-maxpath/09.key" \
-            "$P_CLI force_version=tls12 ca_callback=1 debug_level=3 server_name=CA09 ca_file=data_files/dir-maxpath/00.crt" \
+            "$P_CLI ca_callback=1 debug_level=3 server_name=CA09 ca_file=data_files/dir-maxpath/00.crt" \
             0 \
             -c "use CA callback for X.509 CRT verification" \
             -C "X509 - A fatal error occurred"
@@ -6311,7 +6309,7 @@ requires_config_enabled MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK
 run_test    "Authentication, CA callback: server max_int+1 chain, client default" \
             "$P_SRV crt_file=data_files/dir-maxpath/c10.pem \
                     key_file=data_files/dir-maxpath/10.key" \
-            "$P_CLI force_version=tls12 debug_level=3 ca_callback=1 server_name=CA10 ca_file=data_files/dir-maxpath/00.crt" \
+            "$P_CLI debug_level=3 ca_callback=1 server_name=CA10 ca_file=data_files/dir-maxpath/00.crt" \
             1 \
             -c "use CA callback for X.509 CRT verification" \
             -c "X509 - A fatal error occurred"
@@ -6322,7 +6320,7 @@ requires_config_enabled MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK
 run_test    "Authentication, CA callback: server max_int+1 chain, client optional" \
             "$P_SRV crt_file=data_files/dir-maxpath/c10.pem \
                     key_file=data_files/dir-maxpath/10.key" \
-            "$P_CLI force_version=tls12 ca_callback=1 server_name=CA10 ca_file=data_files/dir-maxpath/00.crt \
+            "$P_CLI ca_callback=1 server_name=CA10 ca_file=data_files/dir-maxpath/00.crt \
                     debug_level=3 auth_mode=optional" \
             1 \
             -c "use CA callback for X.509 CRT verification" \
@@ -6332,7 +6330,7 @@ requires_config_value_equals "MBEDTLS_X509_MAX_INTERMEDIATE_CA" $MAX_IM_CA
 requires_full_size_output_buffer
 requires_config_enabled MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK
 run_test    "Authentication, CA callback: client max_int+1 chain, server optional" \
-            "$P_SRV force_version=tls12 ca_callback=1 debug_level=3 ca_file=data_files/dir-maxpath/00.crt auth_mode=optional" \
+            "$P_SRV ca_callback=1 debug_level=3 ca_file=data_files/dir-maxpath/00.crt auth_mode=optional" \
             "$P_CLI crt_file=data_files/dir-maxpath/c10.pem \
                     key_file=data_files/dir-maxpath/10.key" \
             1 \
@@ -6343,7 +6341,7 @@ requires_config_value_equals "MBEDTLS_X509_MAX_INTERMEDIATE_CA" $MAX_IM_CA
 requires_full_size_output_buffer
 requires_config_enabled MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK
 run_test    "Authentication, CA callback: client max_int+1 chain, server required" \
-            "$P_SRV force_version=tls12 ca_callback=1 debug_level=3 ca_file=data_files/dir-maxpath/00.crt auth_mode=required" \
+            "$P_SRV ca_callback=1 debug_level=3 ca_file=data_files/dir-maxpath/00.crt auth_mode=required" \
             "$P_CLI crt_file=data_files/dir-maxpath/c10.pem \
                     key_file=data_files/dir-maxpath/10.key" \
             1 \
@@ -6354,7 +6352,7 @@ requires_config_value_equals "MBEDTLS_X509_MAX_INTERMEDIATE_CA" $MAX_IM_CA
 requires_full_size_output_buffer
 requires_config_enabled MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK
 run_test    "Authentication, CA callback: client max_int chain, server required" \
-            "$P_SRV force_version=tls12 ca_callback=1 debug_level=3 ca_file=data_files/dir-maxpath/00.crt auth_mode=required" \
+            "$P_SRV ca_callback=1 debug_level=3 ca_file=data_files/dir-maxpath/00.crt auth_mode=required" \
             "$P_CLI crt_file=data_files/dir-maxpath/c09.pem \
                     key_file=data_files/dir-maxpath/09.key" \
             0 \
